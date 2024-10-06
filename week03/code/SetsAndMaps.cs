@@ -21,9 +21,35 @@ public static class SetsAndMaps
     /// <param name="words">An array of 2-character words (lowercase, no duplicates)</param>
     public static string[] FindPairs(string[] words)
     {
-        // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        HashSet<string> seen = new HashSet<string>();
+        List<string> result = new List<string>();
+
+        foreach (string word in words)
+        {
+            // Skip special case of words with the same characters
+            if (word[0] == word[1]) 
+            {
+                continue;
+            }
+
+            // Reverse the word
+            string reversed = new string(new char[] { word[1], word[0] });
+
+            // If the reverse exists in the set, it's a symmetric pair
+            if (seen.Contains(reversed))
+            {
+                result.Add($"{reversed} & {word}"); // or $"{word} & {reversed}"
+            }
+            else
+            {
+                seen.Add(word); // Add the word to the set
+            }
+        }
+
+        return result.ToArray(); // Convert the result list to an array
     }
+
+
 
     /// <summary>
     /// Read a census file and summarize the degrees (education)
@@ -43,6 +69,19 @@ public static class SetsAndMaps
         {
             var fields = line.Split(",");
             // TODO Problem 2 - ADD YOUR CODE HERE
+            if (fields.Length >= 4)
+            {
+                string degree = fields[3].Trim();
+
+                if (degrees.ContainsKey(degree))
+                {
+                    degrees[degree]++;
+                }
+                else
+                {
+                    degrees.Add(degree, 1);
+                }
+            }
         }
 
         return degrees;
@@ -66,9 +105,53 @@ public static class SetsAndMaps
     /// </summary>
     public static bool IsAnagram(string word1, string word2)
     {
-        // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+        // Normalize the words by converting to lowercase and removing spaces
+        word1 = word1.ToLower().Replace(" ", "");
+        word2 = word2.ToLower().Replace(" ", "");
+
+        // If the lengths don't match, they can't be anagrams
+        if (word1.Length != word2.Length)
+        {
+            return false;
+        }
+
+        // Create dictionaries to count character frequencies
+        var charCount = new Dictionary<char, int>();
+
+        // Count characters in word1
+        foreach (char c in word1)
+        {
+            if (charCount.ContainsKey(c))
+            {
+                charCount[c]++;
+            }
+            else
+            {
+                charCount[c] = 1;
+            }
+        }
+
+        // Count characters in word2
+        foreach (char c in word2)
+        {
+            if (charCount.ContainsKey(c))
+            {
+                charCount[c]--;
+
+                if (charCount[c] == 0){
+                    charCount.Remove(c);
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        // Compare the two dictionaries
+        return charCount.Count == 0;
     }
+
 
     /// <summary>
     /// This function will read JSON (Javascript Object Notation) data from the 
